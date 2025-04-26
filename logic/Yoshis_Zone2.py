@@ -6,12 +6,17 @@ import copy
 YM="ym"
 YH="yh"
 EMPTY=None
+
+
+
 special_positions=[
-        (0,0),(0,1),(0,2),(0,5),(0,6),
-        (0,7),(1,0),(1,7),(2,0),(2,7),
-        (5,0),(5,7),(6,0),(6,7),(7,0),
-        (7,1),(7,2),(7,5),(7,6),(7,7)
-        ]
+    [(0,0),(0,1),(0,2),(1,0),(2,0)],
+    [(7,0),(5,0),(6,0),(7,1),(7,2)],
+    [(7,7),(7,5),(7,6),(5,7),(6,7)],
+    [(0,7),(1,7),(2,7),(0,6),(0,5)]
+    
+    
+]
 
 def initial_state():
         "Return the initial state of board"
@@ -34,7 +39,7 @@ def initial_state():
         empty_positions=[(i,j) 
                         for i in range(len(board))
                         for j in range(len(board[0]))
-                        if (i,j) not in special_positions]
+                        if (i,j) not in [cell for zone in special_positions for cell in zone]]
         
         random_number_ym=1
         random_number_yh=1
@@ -107,23 +112,52 @@ def actions(board,player):
 
 def terminal(board):
     "Returns the winner of the game, if there is one."
-    return all(board[p[0]][p[1]]!=EMPTY for p in special_positions)
+    three_color_zones=0
+    for zone in special_positions:
+        green=0
+        red=0
+        for cell in zone:
+            i,j=cell
+            if board[i][j]=='G':
+                green+=1
+            elif board[i][j]=='R':
+                red+=1
+        if green>2 or red>2:
+            three_color_zones+=1
+            
+    if three_color_zones>2:
+        return True
+    return False
+            
 
 def winner(board):    
-        count_green=0
-        count_red=0
         
-        for p in special_positions:
-            
-            if board[p[0]][p[1]]=='G' or board[p[0]][p[1]]=='ym':
-                count_green+=1
-            elif board[p[0]][p[1]]=='R' or board[p[0]][p[1]]=='yh':
-                count_red+=1
-        if count_green<count_red:
-            return 'yh'
-        if count_green>count_red:
+        zones_green=0
+        zones_red=0
+        
+        for zone in special_positions:
+            count_green=0
+            count_red=0
+            for cell in zone:
+                i,j=cell
+                if board[i][j]=='G' or board[i][j]=='ym':
+                    count_green+=1
+                elif board[i][j]=='R' or board[i][j]=='yh':
+                    count_red+=1
+            if count_green>2:
+                zones_green+=1
+            elif count_red>2:
+                zones_red+=1
+        
+        if zones_green>zones_red:
             return 'ym'
+        elif zones_green<zones_red:
+            return 'yh'
+        
         return None
+                
+                
+
 
 def result(action,board,player):
         "Set the board that results from making move (i,j) on the board."
@@ -140,7 +174,7 @@ def result(action,board,player):
         if player=='ym':
             x,y=search_pos('ym',board_copy)
             
-            if (x,y) in special_positions:
+            if (x,y) in [cell for zone in special_positions for cell in zone]:
                 board_copy[x][y]='G'
             else:
                 board_copy[x][y]=EMPTY
@@ -149,7 +183,7 @@ def result(action,board,player):
             x,y=search_pos('yh',board_copy)
         
             
-            if (x,y) in special_positions:
+            if (x,y) in [cell for zone in special_positions for cell in zone]:
                 board_copy[x][y]='R'
             else:
                 board_copy[x][y]=EMPTY
