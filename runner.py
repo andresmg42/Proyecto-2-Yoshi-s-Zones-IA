@@ -33,21 +33,22 @@ while True:
     for event in pygame.event.get():
             if event.type==pygame.QUIT:
                 sys.exit()
+    screen.fill(white)
     
     if user is None:
         
         # Draw title
-        title = largeFont.render("Play Yoshi's Zones", True, white)
+        title = largeFont.render("Play Yoshi's Zones", True, black)
         titleRect = title.get_rect()
         titleRect.center = ((width / 2), 50)
         screen.blit(title, titleRect)
         
         # Draw buttons
         playXButton = pygame.Rect(((width / 2)-(width / 4)/2), ((height / 2)-50/2), width / 4, 50)
-        playX = mediumFont.render("Start", True, black)
+        playX = mediumFont.render("Start", True, white)
         playXRect = playX.get_rect()
         playXRect.center = playXButton.center
-        pygame.draw.rect(screen, white, playXButton)
+        pygame.draw.rect(screen,black, playXButton)
         screen.blit(playX, playXRect)
         
         # Check if button is clicked
@@ -61,7 +62,7 @@ while True:
     else:
         
         
-        screen.fill(white)
+        
         
         #Draw game board
         
@@ -111,17 +112,7 @@ while True:
         titleRect.center=((width/2),30)
         screen.blit(title,titleRect)
         
-        #check for AI move
-        if user!='yh' and not game_over:
-            if ai_turn:
-                time.sleep(0.5)
-                move=yz_game.minimax(board,'ym',depth=6)
-                print(move)
-                board=yz_game.result(move,board,'ym')
-                ai_turn=False
-                user=yz_game.change_player(user)
-            else:
-                ai_turn=True
+        pygame.display.flip()
         
         #check for user move
         click,_,_=pygame.mouse.get_pressed()
@@ -133,8 +124,20 @@ while True:
                     if(board[i][j]==yz.EMPTY and tiles[i][j].collidepoint(mouse)):
                         board=yz_game.result((i,j),board,user)
                         user=yz_game.change_player(user)
-            
-    
+        
+           
+        #check for AI move
+        if user!='yh' and not game_over:
+             
+            if ai_turn:
+                time.sleep(1)
+                move=yz_game.minimax(board,'ym',depth=10)
+                print(move)
+                board=yz_game.result(move,board,'ym')
+                ai_turn=False
+                user=yz_game.change_player(user)
+            else:
+                ai_turn=True
         
     
     pygame.display.flip()
