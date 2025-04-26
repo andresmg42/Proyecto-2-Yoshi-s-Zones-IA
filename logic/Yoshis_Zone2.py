@@ -119,9 +119,9 @@ def winner(board):
         
         for p in special_positions:
             
-            if board[p[0]][p[1]]=='GREEN' or board[p[0]][p[1]]=='ym':
+            if board[p[0]][p[1]]=='G' or board[p[0]][p[1]]=='ym':
                 count_green+=1
-            elif board[p[0]][p[1]]=='RED' or board[p[0]][p[1]]=='yh':
+            elif board[p[0]][p[1]]=='R' or board[p[0]][p[1]]=='yh':
                 count_red+=1
         if count_green<count_red:
             return 'yh'
@@ -145,7 +145,7 @@ def result(action,board,player):
             x,y=search_pos('ym',board_copy)
             
             if (x,y) in special_positions:
-                board_copy[x][y]='GREEN'
+                board_copy[x][y]='G'
             else:
                 board_copy[x][y]=EMPTY
         
@@ -154,7 +154,7 @@ def result(action,board,player):
         
             
             if (x,y) in special_positions:
-                board_copy[x][y]='RED'
+                board_copy[x][y]='R'
             else:
                 board_copy[x][y]=EMPTY
             
