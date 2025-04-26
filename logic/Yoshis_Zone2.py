@@ -107,10 +107,6 @@ def actions(board,player):
 
 def terminal(board):
     "Returns the winner of the game, if there is one."
-    # terminal_winner=winner(board)
-    # if terminal_winner is not None:
-    #     return True
-    
     return all(board[p[0]][p[1]]!=EMPTY for p in special_positions)
 
 def winner(board):    
@@ -133,7 +129,7 @@ def result(action,board,player):
         "Set the board that results from making move (i,j) on the board."
         player_actions=actions(board,player)
         if action not in player_actions:
-            raise Exception('invalid action')
+            return board
         
         board_copy=copy.deepcopy(board)
         
@@ -150,7 +146,7 @@ def result(action,board,player):
                 board_copy[x][y]=EMPTY
         
         else:
-            x,y=search_pos('yh',board)
+            x,y=search_pos('yh',board_copy)
         
             
             if (x,y) in special_positions:
@@ -174,29 +170,31 @@ def utility(board):
     
     return 0
 
-def min_value(board,alpha,beta,depth,player):
+def min_value(board,alpha,beta,depth):
     v= math.inf
-        
+       
     
     if terminal(board) or depth==0:
         return utility(board)
     
-    for action in actions(board,player):
-        v=min(v,max_value(result(action,board,player),alpha,beta,depth-1,player))
+    for action in actions(board,'yh'):
+        v=min(v,max_value(result(action,board,'yh'),alpha,beta,depth-1))
         if v <=alpha:
             return v
         beta=min(beta,v)
     
     return v
 
-def max_value(board,alpha,beta,depth,player):
+def max_value(board,alpha,beta,depth):
     v= -math.inf
+    
     
     if terminal(board) or depth==0:
         return utility(board)
     
-    for action in actions(board,player):
-        v=max(v,min_value(result(action,board,player),alpha,beta,depth-1,player))
+    
+    for action in actions(board,'ym'):
+        v=max(v,min_value(result(action,board,'ym'),alpha,beta,depth-1))
         if v>=beta:
             return v
         alpha=max(alpha,v)
@@ -204,22 +202,22 @@ def max_value(board,alpha,beta,depth,player):
     return v
 
 
-def minimax(board,player_board,depth=3):
+def minimax(board,depth=3):
     """
     Returns the optimal action for the current player on the board.
     """
     
-    actions_board=list(actions(board,player_board))
+    actions_board=list(actions(board,'ym'))
     
     
     
-    if player_board=='ym' and not terminal(board):
+    if  not terminal(board):
         
         list_min=[]
         
         for action in actions_board:
-            new_board=result(action,board,player_board)
-            min_v=min_value(new_board,-math.inf,math.inf,depth-1,player_board)
+            new_board=result(action,board,'ym')
+            min_v=min_value(new_board,-math.inf,math.inf,depth-1)
             list_min.append(min_v)
         
         max_v=max(list_min)
@@ -228,19 +226,6 @@ def minimax(board,player_board,depth=3):
         
         return actions_board[max_index]
         
-    if player_board=='yh' and not terminal(board):
-        
-        list_max=[]
-        
-        for action in actions_board:
-            new_board=result(action,board,player_board)
-            max_v=max_value(new_board,-math.inf,math.inf,depth-1,player_board)
-            list_max.append(max_v)
-            
-        min_v=min(list_max)
-        
-        min_index=list_max.index(min_v)
-        
-        return actions_board[min_index]
+    
     
     return None
