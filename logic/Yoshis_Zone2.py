@@ -247,39 +247,44 @@ def knight_distance_to_nearest_empty_special(board, player):
     
 def utility(board):
     """
-    Returns a heuristic value for the board state.
-    1 if ym wins, -1 if yh wins, otherwise evaluates zone control.
+    Smarter heuristic: evaluates zone victories, partial control, and distance.
     """
-    score = 0
-    
     winner_val = winner(board)
-    if winner_val == 'ym': score= 100
-    if winner_val == 'yh': score= -100
-        
-    # Evaluate zone control
-    ym_count = 0
-    yh_count = 0
-    for zone in special_positions:
-        
-        for cell in zone:
-            i,j = cell
-            if board[i][j] == 'ym' or board[i][j] == 'G':
-                ym_count += 1
-            elif board[i][j] == 'yh' or board[i][j] == 'R':
-                yh_count += 1
-    
-    score+=(ym_count-yh_count)*2    
-        
-    distance_ym=knight_distance_to_nearest_empty_special(board, 'ym')
-    distance_yh=knight_distance_to_nearest_empty_special(board, 'yh')
-    
-    if distance_ym != math.inf:
-        score -= distance_ym
-    if distance_yh != math.inf:
-        score += distance_yh
+    if winner_val == 'ym':
+        return 100
+    if winner_val == 'yh':
+        return -100
 
-    
+    score = 0
+
+    for zone in special_positions:
+        green = 0
+        red = 0
+        for i, j in zone:
+            if board[i][j] == 'G' or board[i][j] == 'ym':
+                green += 1
+            elif board[i][j] == 'R' or board[i][j] == 'yh':
+                red += 1
+
+        if green > 2:
+            score += 5  # secured zone: BIG bonus
+        elif red > 2:
+            score -= 5  # opponent secured zone: BIG penalty
+        else:
+            score += (green - red)  # still fighting for zone: small bonuses
+            
+    if not terminal(board):
+        # Distance evaluation (only if not terminal)
+        distance_ym = knight_distance_to_nearest_empty_special(board, 'ym')
+        distance_yh = knight_distance_to_nearest_empty_special(board, 'yh')
+
+        if distance_ym != math.inf:
+            score -= distance_ym * 0.5  # weight distance lightly
+        if distance_yh != math.inf:
+            score += distance_yh * 0.5
+
     return score
+
 
 def min_value(board,alpha,beta,depth):
     v= math.inf
