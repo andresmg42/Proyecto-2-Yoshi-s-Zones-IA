@@ -112,7 +112,8 @@ def actions(board,player):
 
 def terminal(board):
     "Returns the winner of the game, if there is one."
-    three_color_zones=0
+    three_color_zones_green=0
+    three_color_zones_red=0
     for zone in special_positions:
         green=0
         red=0
@@ -122,10 +123,12 @@ def terminal(board):
                 green+=1
             elif board[i][j]=='R':
                 red+=1
-        if green>2 or red>2:
-            three_color_zones+=1
+        if green>2:
+            three_color_zones_green+=1
+        elif red>2:
+            three_color_zones_red+=1
             
-    if three_color_zones>2:
+    if three_color_zones_red>2 or three_color_zones_green>2:
         return True
     return False
             
