@@ -113,26 +113,20 @@ def actions(board,player):
 
 
 def terminal(board):
-    "Returns the winner of the game, if there is one."
-    three_color_zones_green=0
-    three_color_zones_red=0
+    decided_zones = 0
     for zone in special_positions:
-        green=0
-        red=0
-        for cell in zone:
-            i,j=cell
-            if board[i][j]=='G':
-                green+=1
-            elif board[i][j]=='R':
-                red+=1
-        if green>2:
-            three_color_zones_green+=1
-        elif red>2:
-            three_color_zones_red+=1
-            
-    if three_color_zones_red>2 or three_color_zones_green>2 or three_color_zones_green==three_color_zones_red==2:
-        return True
-    return False
+        green = 0
+        red = 0
+        for i, j in zone:
+            if board[i][j] == 'G':
+                green += 1
+            elif board[i][j] == 'R':
+                red += 1
+        if green > 2 or red > 2:
+            decided_zones += 1
+
+    return decided_zones == 4
+
             
 
 def winner(board):    
@@ -145,9 +139,9 @@ def winner(board):
             count_red=0
             for cell in zone:
                 i,j=cell
-                if board[i][j]=='G' or board[i][j]=='ym':
+                if board[i][j]=='G':
                     count_green+=1
-                elif board[i][j]=='R' or board[i][j]=='yh':
+                elif board[i][j]=='R':
                     count_red+=1
             if count_green>2:
                 zones_green+=1
@@ -242,6 +236,7 @@ def knight_distance_to_nearest_empty_special(board, player):
                 if board[x][y] == EMPTY:
                     dist = knight_distance((i, j), (x, y))
                     min_dist = min(min_dist, dist)
+                    
     return min_dist
 
     
@@ -249,11 +244,11 @@ def utility(board):
     """
     Smarter heuristic: evaluates zone victories, partial control, and distance.
     """
-    winner_val = winner(board)
-    if winner_val == 'ym':
-        return 100
-    if winner_val == 'yh':
-        return -100
+    # winner_val = winner(board)
+    # if winner_val == 'ym':
+    #     return 100
+    # if winner_val == 'yh':
+    #     return -100
 
     score = 0
 
@@ -261,9 +256,9 @@ def utility(board):
         green = 0
         red = 0
         for i, j in zone:
-            if board[i][j] == 'G' or board[i][j] == 'ym':
+            if board[i][j] == 'G':
                 green += 1
-            elif board[i][j] == 'R' or board[i][j] == 'yh':
+            elif board[i][j] == 'R':
                 red += 1
 
         if green > 2:
@@ -274,12 +269,12 @@ def utility(board):
             score += (green - red)  # still fighting for zone: small bonuses
             
     if not terminal(board):
-        # Distance evaluation (only if not terminal)
+        
         distance_ym = knight_distance_to_nearest_empty_special(board, 'ym')
         distance_yh = knight_distance_to_nearest_empty_special(board, 'yh')
 
         if distance_ym != math.inf:
-            score -= distance_ym * 0.5  # weight distance lightly
+            score -= distance_ym * 0.5  
         if distance_yh != math.inf:
             score += distance_yh * 0.5
 
