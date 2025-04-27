@@ -125,13 +125,7 @@ while True:
                    pygame.draw.rect(screen,black,rect,6)
                 else:    
                     pygame.draw.rect(screen,black,rect,3)
-            # if board[i][j]!=yz.EMPTY:
-                    
-                #     move=moveFont.render(board[i][j],True,black)
-                    
-                #     moveRect=move.get_rect()
-                #     moveRect.center=rect.center
-                #     screen.blit(move,moveRect)
+
                 row.append(rect)
             tiles.append(row)
             
@@ -139,25 +133,29 @@ while True:
         
             
         game_over=yz_game.terminal(board)
-        
-        
         #show title
         if game_over:
             winner=yz_game.winner(board)
             if winner is None:
                 title=f'Game Over: Tie'
             elif winner=='ym':
-                title=f'Game Over:Yoshi Green Wins.'
+                title=f'Game Over: Green Yoshi Wins.'
             else:
-                title=f'Game Over:Yoshi Red Wins.'
+                title=f'Game Over: Red Yoshi Wins.'                
         elif user=='yh':
-            title=f'Play as yh'
+            title=f'Play as Red Yoshi.'
         else:
             title=f'Computer thinking...'
         title=largeFont.render(title,True,black)
         titleRect=title.get_rect()
         titleRect.center=((width/2),30)
         screen.blit(title,titleRect)
+        
+        score=f'Green Yoshi:{yz.WIN_ZONES[0]},Red Yoshi:{yz.WIN_ZONES[1]}'
+        score=largeFont.render(score,True,black)
+        scoreRect=score.get_rect()
+        scoreRect.center=((width/2),height-40)
+        screen.blit(score,scoreRect)
         
         pygame.display.flip()
         
@@ -171,7 +169,8 @@ while True:
                     if(board[i][j]==yz.EMPTY and tiles[i][j].collidepoint(mouse)):
                         board=yz_game.result((i,j),board,user)
                         user=yz_game.change_player(user)
-        
+                        yz.winner(board)
+                        
            
         #check for AI move
         if user!='yh' and not game_over:
@@ -183,10 +182,11 @@ while True:
                 board=yz_game.result(move,board,'ym')
                 ai_turn=False
                 user=yz_game.change_player(user)
+                yz.winner(board)
+                
             else:
                 ai_turn=True
-        
-    
+               
     pygame.display.flip()
         
         

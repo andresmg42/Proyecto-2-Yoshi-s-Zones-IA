@@ -9,7 +9,7 @@ YH="yh"
 EMPTY=None
 
 
-
+WIN_ZONES=[0,0]
 
 special_positions=[
     [(0,0),(0,1),(0,2),(1,0),(2,0)],
@@ -127,10 +127,7 @@ def terminal(board):
 
     return decided_zones == 4
 
-            
-
-def winner(board):    
-        
+def obtain_win_zones(board):    
         zones_green=0
         zones_red=0
         
@@ -147,6 +144,31 @@ def winner(board):
                 zones_green+=1
             elif count_red>2:
                 zones_red+=1
+    
+        return (count_green,count_red)
+             
+
+def winner(board):    
+        global WIN_ZONES
+        zones_green=0
+        zones_red=0
+        
+        for zone in special_positions:
+            count_green=0
+            count_red=0
+            for cell in zone:
+                i,j=cell
+                if board[i][j]=='G':
+                    count_green+=1
+                elif board[i][j]=='R':
+                    count_red+=1
+            if count_green>2:
+                zones_green+=1
+            elif count_red>2:
+                zones_red+=1
+        
+        WIN_ZONES[0]=zones_green
+        WIN_ZONES[1]=zones_red
         
         if zones_green>zones_red:
             return 'ym'
