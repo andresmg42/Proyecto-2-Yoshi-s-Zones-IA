@@ -4,6 +4,11 @@ import time
 
 import logic.Yoshis_Zone2 as yz
 
+GREEN=(0,255,0)
+RED=(254,0,0)
+WHITE=(255,255,255)
+BLACK=(0,0,0)
+
 pygame.init()
 
 size=width,height=800,800
@@ -27,6 +32,15 @@ board=yz_game.initial_state()
 user=None
 
 ai_turn=True
+
+def load_image(path):
+    try:
+        image=pygame.image.load(path)
+        image=pygame.transform.scale(image,(tile_size,tile_size))
+        return image
+    except Exception as e:
+        print(f'could not load image, error: {e}')
+        return None
 
 while True:
     
@@ -61,6 +75,11 @@ while True:
            
     else:
         
+        #load images
+        
+        yoshi_green=load_image('images/yoshi_green.png')
+        yoshi_red=load_image('images/yoshi_red.jpg')
+        
            
         #Draw game board
         
@@ -78,18 +97,46 @@ while True:
                         tile_origin[1] + i * tile_size,
                         tile_size, tile_size
                     )
-                pygame.draw.rect(screen,black,rect,3)
-        
-            
+                
+                
+                color=WHITE
                 if board[i][j]!=yz.EMPTY:
+                    if board[i][j]=='G':
+                        color=GREEN
+                    elif board[i][j]=='R':
+                        color=RED
                     
-                    move=moveFont.render(board[i][j],True,black)
+                
+                      
+                pygame.draw.rect(screen,color,(tile_origin[0] + j * tile_size,
+                        tile_origin[1] + i * tile_size,
+                        tile_size, tile_size))
+                
+                if board[i][j]=='ym' and yoshi_green is not None:
+                        screen.blit(yoshi_green,(tile_origin[0] + j * tile_size,
+                        tile_origin[1] + i * tile_size,
+                        tile_size, tile_size))
+                if board[i][j]=='yh' and yoshi_red is not None:
+                    screen.blit(yoshi_red,(tile_origin[0] + j * tile_size,
+                        tile_origin[1] + i * tile_size,
+                        tile_size, tile_size))
+                
+                if (i,j) in [cell for zone in yz.special_positions for cell in zone]:
+                   pygame.draw.rect(screen,black,rect,6)
+                else:    
+                    pygame.draw.rect(screen,black,rect,3)
+            # if board[i][j]!=yz.EMPTY:
                     
-                    moveRect=move.get_rect()
-                    moveRect.center=rect.center
-                    screen.blit(move,moveRect)
+                #     move=moveFont.render(board[i][j],True,black)
+                    
+                #     moveRect=move.get_rect()
+                #     moveRect.center=rect.center
+                #     screen.blit(move,moveRect)
                 row.append(rect)
             tiles.append(row)
+            
+            
+        
             
         game_over=yz_game.terminal(board)
         
@@ -99,8 +146,10 @@ while True:
             winner=yz_game.winner(board)
             if winner is None:
                 title=f'Game Over: Tie'
+            elif winner=='ym':
+                title=f'Game Over:Yoshi Green Wins.'
             else:
-                title=f'Game Over:{winner} Wins.'
+                title=f'Game Over:Yoshi Red Wins.'
         elif user=='yh':
             title=f'Play as yh'
         else:
