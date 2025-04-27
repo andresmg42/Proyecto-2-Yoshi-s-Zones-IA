@@ -129,7 +129,7 @@ while True:
              
             if ai_turn:
                 time.sleep(0.5)
-                move=yz_game.minimax(board,depth=4)
+                move=yz_game.minimax(board,depth=5)
                 print(move)
                 board=yz_game.result(move,board,'ym')
                 ai_turn=False

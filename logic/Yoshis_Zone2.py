@@ -2,10 +2,12 @@ import math
 import numpy as np
 import random as rm
 import copy
+from collections import deque
 
 YM="ym"
 YH="yh"
 EMPTY=None
+
 
 
 
@@ -128,7 +130,7 @@ def terminal(board):
         elif red>2:
             three_color_zones_red+=1
             
-    if three_color_zones_red>2 or three_color_zones_green>2:
+    if three_color_zones_red>2 or three_color_zones_green>2 or three_color_zones_green==three_color_zones_red==2:
         return True
     return False
             
@@ -195,7 +197,52 @@ def result(action,board,player):
         
         return board_copy
 
+def knight_distance(start, goal):
+    """Returns the number of knight moves from start to goal."""
+    moves = [(-2, -1), (-2, 1), (-1, 2), (1, 2),
+             (2, 1), (2, -1), (1, -2), (-1, -2)]
+    visited = set()
+    queue = deque([(start, 0)])  # (position, steps)
 
+    while queue:
+        (x, y), steps = queue.popleft()
+        if (x, y) == goal:
+            return steps
+        for dx, dy in moves:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < 8 and 0 <= ny < 8 and (nx, ny) not in visited:
+                visited.add((nx, ny))
+                queue.append(((nx, ny), steps + 1))
+    return math.inf
+
+def valid_zones(board):
+    zones=[]   
+    for zone in special_positions:
+        count_green=0
+        count_red=0
+        for cell in zone:
+            i,j=cell
+            if board[i][j]=='G' or board[i][j]=='ym':
+                count_green+=1
+            elif board[i][j]=='R' or board[i][j]=='yh':
+                count_red+=1
+        if count_green<=2 and count_red<=2:
+            zones.append(zone)
+            
+    return zones
+        
+            
+                
+def knight_distance_to_nearest_empty_special(board, player):
+    i, j = search_pos(player, board)
+    min_dist = math.inf
+    valid_z=valid_zones(board)
+    for zone in valid_z:
+        for x, y in zone:
+                if board[x][y] == EMPTY:
+                    dist = knight_distance((i, j), (x, y))
+                    min_dist = min(min_dist, dist)
+    return min_dist
 
     
 def utility(board):
@@ -220,11 +267,17 @@ def utility(board):
                 ym_count += 1
             elif board[i][j] == 'yh' or board[i][j] == 'R':
                 yh_count += 1
+    
+    score+=(ym_count-yh_count)*2    
         
-    if ym_count>yh_count:
-        score+=1
-    elif ym_count<yh_count:
-        score-=1
+    distance_ym=knight_distance_to_nearest_empty_special(board, 'ym')
+    distance_yh=knight_distance_to_nearest_empty_special(board, 'yh')
+    
+    if distance_ym != math.inf:
+        score -= distance_ym
+    if distance_yh != math.inf:
+        score += distance_yh
+
     
     return score
 
