@@ -191,18 +191,39 @@ def result(action,board,player):
         board_copy[i][j]=player
         
         return board_copy
+
+
+
     
 def utility(board):
     """
-    Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
+    Returns a heuristic value for the board state.
+    1 if ym wins, -1 if yh wins, otherwise evaluates zone control.
     """
-    winner_utility= winner(board)
+    score = 0
     
-    if winner_utility =='ym': return 1
+    winner_val = winner(board)
+    if winner_val == 'ym': score= 100
+    if winner_val == 'yh': score= -100
+        
+    # Evaluate zone control
+    ym_count = 0
+    yh_count = 0
+    for zone in special_positions:
+        
+        for cell in zone:
+            i,j = cell
+            if board[i][j] == 'ym' or board[i][j] == 'G':
+                ym_count += 1
+            elif board[i][j] == 'yh' or board[i][j] == 'R':
+                yh_count += 1
+        
+    if ym_count>yh_count:
+        score+=1
+    elif ym_count<yh_count:
+        score-=1
     
-    if winner_utility=='yh':return -1
-    
-    return 0
+    return score
 
 def min_value(board,alpha,beta,depth):
     v= math.inf
@@ -242,8 +263,6 @@ def minimax(board,depth=3):
     """
     
     actions_board=list(actions(board,'ym'))
-    
-    
     
     if  not terminal(board):
         
