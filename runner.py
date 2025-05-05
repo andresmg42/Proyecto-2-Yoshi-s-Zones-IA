@@ -31,6 +31,8 @@ board=yz_game.initial_state()
 
 user=None
 
+depth=2
+
 ai_turn=True
 
 def load_image(path):
@@ -41,6 +43,19 @@ def load_image(path):
     except Exception as e:
         print(f'could not load image, error: {e}')
         return None
+
+def draw_button(text,left,top,width,height):
+    button = pygame.Rect(left,top,width,height)
+    playX = mediumFont.render(text, True, white)
+    playXRect = playX.get_rect()
+    playXRect.center = button.center
+    pygame.draw.rect(screen,black, button)
+    screen.blit(playX, playXRect)
+    
+    return button
+
+    
+    
 
 while True:
     
@@ -57,21 +72,62 @@ while True:
         titleRect.center = ((width / 2), 50)
         screen.blit(title, titleRect)
         
-        # Draw buttons
-        playXButton = pygame.Rect(((width / 2)-(width / 4)/2), ((height / 2)-50/2), width / 4, 50)
-        playX = mediumFont.render("Start", True, white)
-        playXRect = playX.get_rect()
-        playXRect.center = playXButton.center
-        pygame.draw.rect(screen,black, playXButton)
-        screen.blit(playX, playXRect)
+        # Draw title
+        title = largeFont.render("Please choose the dificult level to start:", True, black)
+        titleRect = title.get_rect()
+        titleRect.center = ((width / 2), (height/2)-100)
+        screen.blit(title, titleRect)
+        
+        # Draw button beginner
+        # begginer_button = pygame.Rect(((width / 2)-(width / 4)/2), ((height / 2)-50/2), width / 4, 50)
+        # playX = mediumFont.render("Begginer", True, white)
+        # playXRect = playX.get_rect()
+        # playXRect.center = begginer_button.center
+        # pygame.draw.rect(screen,black, begginer_button)
+        # screen.blit(playX, playXRect)
+        
+        begginer_button=draw_button('Begginer',((width / 2)-(width / 4)/2),((height / 2)-50/2),width / 4,50)
+        
+        #Draw button medium
+         
+        # medium_button = pygame.Rect(((width / 2)-(width / 4)/2), ((height / 2)-50/2)+100, width / 4, 50)
+        # playX = mediumFont.render("Medium", True, white)
+        # playXRect = playX.get_rect()
+        # playXRect.center = medium_button.center
+        # pygame.draw.rect(screen,black, medium_button)
+        # screen.blit(playX, playXRect)
+        
+        medium_button=draw_button('Medium',((width / 2)-(width / 4)/2),((height / 2)-50/2)+100,width / 4,50)
+        
+        #Draw button hard
+
+        # hard_button = pygame.Rect(((width / 2)-(width / 4)/2), ((height / 2)-50/2)+200, width / 4, 50)
+        # playX = mediumFont.render("Hard", True, white)
+        # playXRect = playX.get_rect()
+        # playXRect.center = hard_button.center
+        # pygame.draw.rect(screen,black, hard_button)
+        # screen.blit(playX, playXRect)
+        
+        hard_button=draw_button('Hard',((width / 2)-(width / 4)/2),((height / 2)-50/2)+200,width / 4,50)
         
         # Check if button is clicked
         click, _, _ = pygame.mouse.get_pressed()
         if click == 1:
             mouse = pygame.mouse.get_pos()
-            if playXButton.collidepoint(mouse):
+            if begginer_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user ='ym'
+                depth=2
+            elif medium_button.collidepoint(mouse):
+                time.sleep(0.2)
+                user='ym'
+                depth=4
+            elif hard_button.collidepoint(mouse):
+                time.sleep(0.2)
+                user='ym'
+                depth=6
+            
+            
            
     else:
         
@@ -136,12 +192,32 @@ while True:
         #show title
         if game_over:
             winner=yz_game.winner(board)
+            
             if winner is None:
                 title=f'Game Over: Tie'
             elif winner=='ym':
                 title=f'Game Over: Green Yoshi Wins.'
             else:
-                title=f'Game Over: Red Yoshi Wins.'                
+                title=f'Game Over: Red Yoshi Wins.'
+                
+            #draw again button
+            again_button=draw_button('Play Again',((width / 2)-(width / 4)/2),((height / 2)-50/2),width / 4,50)
+                
+            #chek button again click
+            click,_,_=pygame.mouse.get_pressed()
+            
+            if click==1:
+                mouse=pygame.mouse.get_pos()
+                if again_button.collidepoint(mouse):
+                    time.sleep(0.2)
+                    board=yz_game.initial_state()
+
+                    user=None
+
+                    depth=2
+
+                    ai_turn=True
+                                     
         elif user=='yh':
             title=f'Play as Red Yoshi.'
         else:
@@ -177,7 +253,7 @@ while True:
              
             if ai_turn:
                 time.sleep(0.5)
-                move=yz_game.minimax(board,depth=5)
+                move=yz_game.minimax(board,depth=depth)
                 print(move)
                 board=yz_game.result(move,board,'ym')
                 ai_turn=False
