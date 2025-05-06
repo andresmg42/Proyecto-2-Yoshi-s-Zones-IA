@@ -112,40 +112,25 @@ def actions(board,player):
 
 
 
+# def terminal(board):
+#     decided_zones = 0
+#     for zone in special_positions:
+#         green = 0
+#         red = 0
+#         for i, j in zone:
+#             if board[i][j] == 'G':
+#                 green += 1
+#             elif board[i][j] == 'R':
+#                 red += 1
+#         if green > 2 or red > 2:
+#             decided_zones += 1
+
+#     return decided_zones == 4
+
 def terminal(board):
-    decided_zones = 0
-    for zone in special_positions:
-        green = 0
-        red = 0
-        for i, j in zone:
-            if board[i][j] == 'G':
-                green += 1
-            elif board[i][j] == 'R':
-                red += 1
-        if green > 2 or red > 2:
-            decided_zones += 1
-
-    return decided_zones == 4
-
-def obtain_win_zones(board):    
-        zones_green=0
-        zones_red=0
+    return WIN_ZONES[0]>2 or WIN_ZONES[1]>2 or WIN_ZONES[0]==WIN_ZONES[1]==2
         
-        for zone in special_positions:
-            count_green=0
-            count_red=0
-            for cell in zone:
-                i,j=cell
-                if board[i][j]=='G':
-                    count_green+=1
-                elif board[i][j]=='R':
-                    count_red+=1
-            if count_green>2:
-                zones_green+=1
-            elif count_red>2:
-                zones_red+=1
-    
-        return (count_green,count_red)
+
              
 
 def winner(board):    
@@ -213,65 +198,60 @@ def result(action,board,player):
         
         return board_copy
 
-def knight_distance(start, goal):
-    """Returns the number of knight moves from start to goal."""
-    moves = [(-2, -1), (-2, 1), (-1, 2), (1, 2),
-             (2, 1), (2, -1), (1, -2), (-1, -2)]
-    visited = set()
-    queue = deque([(start, 0)])  # (position, steps)
+# def knight_distance(start, goal):
+#     """Returns the number of knight moves from start to goal."""
+#     moves = [(-2, -1), (-2, 1), (-1, 2), (1, 2),
+#              (2, 1), (2, -1), (1, -2), (-1, -2)]
+#     visited = set()
+#     queue = deque([(start, 0)])  # (position, steps)
 
-    while queue:
-        (x, y), steps = queue.popleft()
-        if (x, y) == goal:
-            return steps
-        for dx, dy in moves:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < 8 and 0 <= ny < 8 and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                queue.append(((nx, ny), steps + 1))
-    return math.inf
+#     while queue:
+#         (x, y), steps = queue.popleft()
+#         if (x, y) == goal:
+#             return steps
+#         for dx, dy in moves:
+#             nx, ny = x + dx, y + dy
+#             if 0 <= nx < 8 and 0 <= ny < 8 and (nx, ny) not in visited:
+#                 visited.add((nx, ny))
+#                 queue.append(((nx, ny), steps + 1))
+#     return math.inf
 
-def valid_zones(board):
-    zones=[]   
-    for zone in special_positions:
-        count_green=0
-        count_red=0
-        for cell in zone:
-            i,j=cell
-            if board[i][j]=='G' or board[i][j]=='ym':
-                count_green+=1
-            elif board[i][j]=='R' or board[i][j]=='yh':
-                count_red+=1
-        if count_green<=2 and count_red<=2:
-            zones.append(zone)
+# def valid_zones(board):
+#     zones=[]   
+#     for zone in special_positions:
+#         count_green=0
+#         count_red=0
+#         for cell in zone:
+#             i,j=cell
+#             if board[i][j]=='G':
+#                 count_green+=1
+#             elif board[i][j]=='R':
+#                 count_red+=1
+#         if count_green<=2 and count_red<=2:
+#             zones.append(zone)
             
-    return zones
+#     return zones
         
             
                 
-def knight_distance_to_nearest_empty_special(board, player):
-    i, j = search_pos(player, board)
-    min_dist = math.inf
-    valid_z=valid_zones(board)
-    for zone in valid_z:
-        for x, y in zone:
-                if board[x][y] == EMPTY:
-                    dist = knight_distance((i, j), (x, y))
-                    min_dist = min(min_dist, dist)
+# def knight_distance_to_nearest_empty_special(board, player):
+#     i, j = search_pos(player, board)
+#     min_dist = math.inf
+#     # valid_z=valid_zones(board)
+#     for zone in special_positions:
+#         for x, y in zone:
+#                 if board[x][y] == EMPTY:
+#                     dist = knight_distance((i, j), (x, y))
+#                     min_dist = min(min_dist, dist)
                     
-    return min_dist
+#     return min_dist
 
     
 def utility(board):
     """
     Smarter heuristic: evaluates zone victories, partial control, and distance.
     """
-    # winner_val = winner(board)
-    # if winner_val == 'ym':
-    #     return 100
-    # if winner_val == 'yh':
-    #     return -100
-
+    
     score = 0
 
     for zone in special_positions:
@@ -282,23 +262,15 @@ def utility(board):
                 green += 1
             elif board[i][j] == 'R':
                 red += 1
-
-        if green > 2:
-            score += 5  # secured zone: BIG bonus
-        elif red > 2:
-            score -= 5  # opponent secured zone: BIG penalty
-        else:
-            score += (green - red)  # still fighting for zone: small bonuses
-            
-    if not terminal(board):
         
-        distance_ym = knight_distance_to_nearest_empty_special(board, 'ym')
-        distance_yh = knight_distance_to_nearest_empty_special(board, 'yh')
+        if green > 2:
+            score += 2  # secured zone: BIG bonus
+        elif red > 2:
+            score -= 2  # opponent secured zone: BIG penalty
+        else:
+             score += (green - red)*0.5  # still fighting for zone: small bonuses
+            
 
-        if distance_ym != math.inf:
-            score -= distance_ym * 0.5  
-        if distance_yh != math.inf:
-            score += distance_yh * 0.5
 
     return score
 

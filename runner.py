@@ -117,11 +117,11 @@ while True:
             if begginer_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user ='ym'
-                depth=2
+                depth=3
             elif medium_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user='ym'
-                depth=4
+                depth=5
             elif hard_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user='ym'
@@ -210,6 +210,7 @@ while True:
                 mouse=pygame.mouse.get_pos()
                 if again_button.collidepoint(mouse):
                     time.sleep(0.2)
+                    
                     board=yz_game.initial_state()
 
                     user=None
