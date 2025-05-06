@@ -2,9 +2,9 @@ import pygame
 import sys
 import time
 
-# import logic.Yoshis_Zone2 as yz
+import logic.Yoshis_Zone2 as yz
 
-import logic.ycloude as yz
+# import logic.ycloude as yz
 
 # import logic.Yoshis_Zone2_chat as yz
 
@@ -100,15 +100,15 @@ while True:
             if begginer_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user ='ym'
-                depth=2
+                depth=3
             elif medium_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user='ym'
-                depth=3
+                depth=4
             elif hard_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user='ym'
-                depth=4
+                depth=5
             
             
            

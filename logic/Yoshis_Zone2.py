@@ -21,7 +21,7 @@ special_positions=[
 ]
 
 def initial_state():
-        "Return the initial state of board"
+        
         
         
         board = [
@@ -83,9 +83,7 @@ def search_pos(string,board):
                     return (i,j)
         return None
 def actions(board,player):
-    """
-    Returns set of all possible actions (i, j) available on the board.
-    """
+    
 
     player_actions=set()
 
@@ -111,9 +109,6 @@ def actions(board,player):
     return player_actions
 
 
-
-
-
 def terminal(board):
     zones_green=0
     zones_red=0
@@ -131,16 +126,9 @@ def terminal(board):
             zones_green+=1
         elif count_red>2:
             zones_red+=1
-    
-        
-        
-        
+       
     return zones_green>2 or zones_red>2 or zones_red==zones_green==2
     
-
-        
-
-             
 
 def winner(board):    
         global WIN_ZONES
@@ -175,7 +163,7 @@ def winner(board):
 
 
 def result(action,board,player):
-        "Set the board that results from making move (i,j) on the board."
+    
         player_actions=actions(board,player)
         if action not in player_actions:
             return None
@@ -211,9 +199,7 @@ def result(action,board,player):
 
     
 def utility(board):
-    """
-    Smarter heuristic: evaluates zone victories, partial control, and distance.
-    """
+    
     
     score = 0
 
@@ -227,16 +213,14 @@ def utility(board):
                 red += 1
         
         if green > 2:
-            score += 2  # secured zone: BIG bonus
+            score += 2  
         elif red > 2:
-            score -= 2  # opponent secured zone: BIG penalty
+            score -= 2  
         else:
-             score += (green - red)*0.5  # still fighting for zone: small bonuses
+             score += (green - red)*0.5  
              
         
     
-
-
     return score
 
 
@@ -273,9 +257,6 @@ def max_value(board,alpha,beta,depth):
 
 
 def minimax(board,depth=3):
-    """
-    Returns the optimal action for the current player on the board.
-    """
     
     actions_board=list(actions(board,'ym'))
     
