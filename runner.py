@@ -111,15 +111,15 @@ while True:
             if begginer_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user = "ym"
-                depth = 3
+                depth = 2
             elif medium_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user = "ym"
-                depth = 4
+                depth = 3
             elif hard_button.collidepoint(mouse):
                 time.sleep(0.2)
                 user = "ym"
-                depth = 5
+                depth = 4
 
     else:
 

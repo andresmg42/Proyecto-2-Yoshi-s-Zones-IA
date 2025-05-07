@@ -206,11 +206,14 @@ def utility(board):
                 red += 1
 
         if green > 2:
-            score += 2
+            score += 100
         elif red > 2:
-            score -= 2
+            score -= 100
         else:
-            score += (green - red) * 0.5
+            score += (green - red) * 10
+        
+    random_value= rm.uniform(0,0.1)
+    score+=random_value
 
     return score
 
