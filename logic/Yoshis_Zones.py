@@ -212,8 +212,8 @@ def utility(board):
         else:
             score += (green - red) * 10
         
-        random_value= rm.uniform(0,0.1)
-        score+=random_value
+    random_value= rm.uniform(0,0.1)
+    score+=random_value
 
     return score
 
