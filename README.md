@@ -2,7 +2,7 @@
 
 ### To run this Game:
 1. use python 3.13.2 or lower
-2. copy and paste the nex code in a commad prompt:
+2. copy and paste the nex code in a linux terminal:
 
 ```
 git clone https://github.com/andresmg42/Proyecto-2-Yoshi-s-Zones-IA.git
